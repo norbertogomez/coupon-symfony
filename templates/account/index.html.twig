@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bienvenido a tu cuenta!{% endblock %}
+{% block stylesheets %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+{% endblock %}
+
+{% block body %}
+  <div>
+    <div style="min-height: 100px;">
+      <button id="js-request_coupon">Solicitar cupón</button>
+    </div>
+  </div>
+
+  <table id="coupons" class="display">
+    <thead>
+    <tr>
+      <th>Coupon</th>
+      <th>Status</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for coupon in coupons %}
+      <tr>
+        <td>{{ coupon.code }}</td>
+        <td>{{ coupon.status == 1 ? 'Valido' : 'Canjeado'}}</td>
+        <td>
+          {% if coupon.status == 1 %}
+            <button class="exchange-coupon" data-exchange="{{ coupon.id }}">
+              Canjear
+            </button>
+          {% else %}
+            Ya Canjeado
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block javascripts %}
+  <script
+    src="http://code.jquery.com/jquery-2.2.4.min.js"
+    integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+    crossorigin="anonymous"></script>
+  <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('#coupons').DataTable();
+
+      $('.exchange-coupon').on('click', function () {
+        $code = $(this).data('exchange');
+        swal({
+          title: "¿Quieres canjear tu cupón?",
+          text: "Una vez canjeado no podrás volver a usarlo",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        }).then((exchange) => {
+          if (exchange) {
+            $.ajax({
+              url: '/coupon/exchange/' + $code,
+              type: "POST",
+              dataType: "json",
+              data: {},
+              async: true,
+            }).done(function (response) {
+              if (response.status === "success") {
+                swal("¡Genial!", "tu cupón se ha canjeado satisfactoriamente", "success", {
+                  button: "Continuar"
+                }).then((proceed) => {
+                  location.reload();
+                });
+              } else {
+                swal({
+                  title: 'Ha ocurrido un error',
+                  text: response.message
+                });
+              }
+            });
+          } else {
+            swal("¡Una lástima, mejor en otro momento!");
+          }
+        });
+      });
+
+      $('#js-request_coupon').on('click', function () {
+        swal({
+          title: "¿Estas seguro de que quieres un nuevo cupón?",
+          text: "Gracias a el podrás beneficiarte de maravillosas ofertas",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        }).then((generate) => {
+          if (generate) {
+            $.ajax({
+              url:'{{ (path('coupon_create')) }}',
+              type: "POST",
+              dataType: "json",
+              data: {},
+              async: true,
+              success: function (response) {
+                $table = $('#coupons').DataTable();
+                let coupon = response.coupon;
+                let status = JSON.stringify(response.status) === "1" ? 'Valido' : 'No disponible';
+
+                $table.row.add([
+                  coupon,
+                  status,
+                  'Canjear'
+                ]).draw();
+
+                swal("Genial, ya tienes un nuevo cupón disponible!", {
+                  icon: "success",
+                });
+              }
+            });
+          } else {
+            swal("¡Una lástima, mejor en otro momento!");
+          }
+        });
+      })
+    });
+  </script>
+{% endblock %}

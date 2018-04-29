@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Coupon creator{% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+    {% block head %}
+      <style>
+        {{ include('@WebProfiler/Profiler/profiler.css.twig') }}
+      </style>
+    {% endblock %}
+  </head>
+  <body>
+    {% block body %}{% endblock %}
+    {% block javascripts %}{% endblock %}
+  </body>
+</html>
