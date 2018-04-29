@@ -103,18 +103,10 @@
               data: {},
               async: true,
               success: function (response) {
-                $table = $('#coupons').DataTable();
-                let coupon = response.coupon;
-                let status = JSON.stringify(response.status) === "1" ? 'Valido' : 'No disponible';
-
-                $table.row.add([
-                  coupon,
-                  status,
-                  'Canjear'
-                ]).draw();
-
-                swal("Genial, ya tienes un nuevo cupón disponible!", {
-                  icon: "success",
+                swal("¡Genial!", "Ya puedes disfrutar de tu cupón", "success", {
+                  button: "Continuar"
+                }).then((proceed) => {
+                  location.reload();
                 });
               }
             });
