@@ -7,7 +7,7 @@ Dependencies:
 
 Once you're done, simply `cd` to your project and run `docker-compose up -d`. This will initialise and start all the containers, then leave them running in the background.
 
-Access PHP container `docker-compose exec php-fpm bash` and execute  
+Access PHP container `docker-compose exec php-fpm bash` and execute `bin/console doctrine:migrations:migrate` 
 # Docker compose cheatsheet
 
 **Note:** you need to cd first to where your docker-compose.yml file lives.
@@ -17,10 +17,8 @@ Access PHP container `docker-compose exec php-fpm bash` and execute
   * Stop containers: `docker-compose stop`
   * Kill containers: `docker-compose kill`
   * View container logs: `docker-compose logs`
+  * View container status: `docker-compose ps`
   * Execute command inside of container: `docker-compose exec SERVICE_NAME COMMAND` where `COMMAND` is whatever you want to run. Examples:
         * Shell into the PHP container, `docker-compose exec php-fpm bash`
         * Run symfony console, `docker-compose exec php-fpm bin/console`
         * Open a mysql shell, `docker-compose exec mysql mysql -uroot -pCHOSEN_ROOT_PASSWORD`
-
-
-Disclaimer: This project has been generated on phpdocker.io
